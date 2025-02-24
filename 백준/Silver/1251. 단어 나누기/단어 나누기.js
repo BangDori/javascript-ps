@@ -19,35 +19,22 @@ readline
   });
 
 function solution(str) {
-  let answer = "";
-
-  const points = [];
+  let answer = null;
 
   for (let i = 1; i < str.length; i++) {
     for (let j = i + 1; j < str.length; j++) {
-      points.push([i, j]);
+      const reversed = [
+        [...str.slice(0, i)].reverse().join(""),
+        [...str.slice(i, j)].reverse().join(""),
+        [...str.slice(j)].reverse().join(""),
+      ].join("");
+
+      // 가장 작은 문자열 업데이트
+      if (answer === null || reversed < answer) {
+        answer = reversed;
+      }
     }
-  }
-
-  for (const [x, y] of points) {
-    const array = devideString(str, x, y).map((s) => reverseString(s));
-
-    const reversed = array.join("");
-    if (answer === "") {
-      answer = reversed;
-      continue;
-    }
-
-    if (answer > reversed) answer = reversed;
   }
 
   return answer;
-}
-
-function devideString(str, x, y) {
-  return [str.slice(0, x), str.slice(x, y), str.slice(y, str.length)];
-}
-
-function reverseString(str) {
-  return [...str].reverse().join("");
 }
