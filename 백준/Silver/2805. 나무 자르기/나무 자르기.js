@@ -7,49 +7,42 @@ let input = [];
 
 readline
   .on("line", function (line) {
-    input.push(line.split(" ").map((el) => +el));
+    input.push(line);
   })
   .on("close", function () {
     /**
      * Solution
      */
-    const [_, M] = input[0];
-    const trees = input[1];
-
-    const answer = solution(M, trees);
-    console.log(answer);
+    const [_, m] = input[0].split(" ").map(Number);
+    const trees = input[1].split(" ").map(Number);
+    console.log(solution(m, trees));
 
     process.exit();
   });
 
-function solution(M, trees) {
-  const left = 0,
-    right = Math.max(...trees) - 1;
+function solution(m, trees) {
   let answer = 0;
+  let left = 0;
+  let right = Math.max(...trees) - 1;
 
-  const binarySearch = (target, bleft, bright) => {
-    while (bleft <= bright) {
-      // 만약 현재 길이(mid)로 자른 나무의 길이가 높다면 ? answer 대체
-      const mid = Math.floor((bleft + bright) / 2);
-      const treeLength = trees.reduce(
-        (acc, curr) => acc + Math.max(curr - mid, 0),
-        0
-      );
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
 
-      if (treeLength >= target) {
-        answer = Math.max(answer, mid);
-        bleft = mid + 1;
-        continue;
-      }
+    let cuttingLength = 0;
 
-      if (treeLength < target) {
-        bright = mid - 1;
-        continue;
+    for (const tree of trees) {
+      if (tree > mid) {
+        cuttingLength += tree - mid;
       }
     }
-  };
 
-  binarySearch(M, left, right);
+    if (cuttingLength >= m) {
+      left = mid + 1;
+      answer = Math.max(answer, mid);
+    } else {
+      right = mid - 1;
+    }
+  }
 
   return answer;
 }
