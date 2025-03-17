@@ -1,19 +1,35 @@
-const numbersEng = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
-const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const nums = {
+    "zero": 0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9
+};
 
 function solution(s) {
-    var answer = 0;
+    let answer = '';    
+    let currString = '';
+    
+    for (const alpha of s) {
+        if (alpha >= '0' && alpha <= '9') {
+            answer += alpha;
+            continue;
+        }
         
-    let convertedS = s;
-    for (let i = 0; i <= 9; i++) {
-        if (convertedS.includes(numbersEng[i])) {
-            convertedS = convertedS.replaceAll(numbersEng[i], String(numbers[i]));
+        currString += alpha;
+        
+        if (nums[currString] !== undefined) {
+            answer += nums[currString];
+            currString = '';
         }
     }
-
-    answer = parseInt(convertedS, 10);
-        
-    return answer;
+    
+    return parseInt(answer, 10);
 }
 
 // 동일한 영어가 2개 이상 나오는 경우
