@@ -3,23 +3,6 @@ const readline = require("readline").createInterface({
   output: process.stdout,
 });
 
-let input = [];
-
-readline
-  .on("line", function (line) {
-    input.push(line);
-  })
-  .on("close", function () {
-    /**
-     * Solution
-     */
-    const n = +input[0];
-    const nums = input.slice(1).map(Number);
-    console.log(solution(n, nums));
-
-    process.exit();
-  });
-
 class MinHeap {
   constructor() {
     this.heap = [];
@@ -49,6 +32,7 @@ class MinHeap {
   heapPush(num) {
     this.heap.push(num);
     this.bubbleUp();
+
     return this.heap;
   }
 
@@ -56,6 +40,7 @@ class MinHeap {
     let child = this.size() - 1;
     let parent = this.getParentIdx(child);
 
+    // 최소 힙
     while (this.heap[child] < this.heap[parent]) {
       this.swap(parent, child);
       child = parent;
@@ -97,6 +82,23 @@ class MinHeap {
     }
   }
 }
+
+let input = [];
+
+readline
+  .on("line", function (line) {
+    input.push(line);
+  })
+  .on("close", function () {
+    /**
+     * Solution
+     */
+    const n = +input[0];
+    const nums = input.slice(1).map(Number);
+    console.log(solution(n, nums));
+
+    process.exit();
+  });
 
 function solution(n, nums) {
   const answer = [];
