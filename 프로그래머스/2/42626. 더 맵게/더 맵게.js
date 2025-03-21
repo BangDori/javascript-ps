@@ -30,10 +30,10 @@ class MinHeap {
     if (heapSize === 1) return this.heap.pop();
 
     const value = this.heap[0];
-    
+
     this.heap[0] = this.heap.pop();
     this.bubbleDown();
-    
+
     return value;
   }
 
@@ -61,10 +61,15 @@ class MinHeap {
     let rightChild = this.getRightChildIdx(parent);
 
     while (
-      (leftChild <= this.size() - 1 && this.heap[leftChild] < this.heap[parent]) ||
-      (rightChild <= this.size() - 1 && this.heap[rightChild] < this.heap[parent])
+      (leftChild <= this.size() - 1 &&
+        this.heap[leftChild] < this.heap[parent]) ||
+      (rightChild <= this.size() - 1 &&
+        this.heap[rightChild] < this.heap[parent])
     ) {
-      if (rightChild <= this.size() - 1 && this.heap[leftChild] > this.heap[rightChild]) {
+      if (
+        rightChild <= this.size() - 1 &&
+        this.heap[leftChild] > this.heap[rightChild]
+      ) {
         this.swap(parent, rightChild);
         parent = rightChild;
       } else {
@@ -78,15 +83,15 @@ class MinHeap {
 }
 
 function solution(scoville, K) {
-    let answer = 0;
-    
-    const heap = new MinHeap();
-    scoville.forEach((el) => heap.heapPush(el));
+  let answer = 0;
 
-    while (heap.heap[0] < K && heap.size() >= 2) {
-        answer++;
-        heap.heapPush(heap.heapPop() + heap.heapPop() * 2);
-    }
-    
-    return heap.heap[0] >= K ? answer : -1;
+  const heap = new MinHeap();
+  scoville.forEach((el) => heap.heapPush(el));
+
+  while (heap.heap[0] < K && heap.size() >= 2) {
+    answer++;
+    heap.heapPush(heap.heapPop() + heap.heapPop() * 2);
+  }
+
+  return heap.heap[0] >= K ? answer : -1;
 }
