@@ -3,7 +3,7 @@ const readline = require("readline").createInterface({
   output: process.stdout,
 });
 
-const input = [];
+let input = [];
 
 readline
   .on("line", function (line) {
@@ -13,7 +13,6 @@ readline
     /**
      * Solution
      */
-
     const n = +input[0];
     console.log(solution(n));
 
@@ -21,22 +20,25 @@ readline
   });
 
 function solution(n) {
-  const array = Array.from({ length: n }, (_, index) => index + 1);
-  let answer = getPermutations(array, n);
+  const result = [];
+  const array = Array.from({ length: n }, (_, index) => index+1);
 
-  return answer.map((el) => el.join(" ")).join("\n");
+  const swap = (arr, i, j) => [arr[i], arr[j]] = [arr[j], arr[i]];
+
+  const permutation = (i, arr) => {
+    if (i === arr.length) {
+      return result.push([...arr]);
+    }
+
+    for (let j = i; j < arr.length; j++) {
+      swap(arr, i, j);
+      permutation(i+1, arr);
+      swap(arr, i, j);
+    }
+  }
+
+  permutation(0, array);
+  result.sort()
+
+  return result.map(el => el.join(" ")).join("\n");
 }
-
-const getPermutations = function (arr, selectNumber) {
-  const results = [];
-  if (selectNumber === 1) return arr.map((el) => [el]);
-
-  arr.forEach((fixed, index, origin) => {
-    const rest = [...origin.slice(0, index), ...origin.slice(index + 1)];
-    const permutations = getPermutations(rest, selectNumber - 1);
-    const attached = permutations.map((el) => [fixed, ...el]);
-    results.push(...attached);
-  });
-
-  return results;
-};
