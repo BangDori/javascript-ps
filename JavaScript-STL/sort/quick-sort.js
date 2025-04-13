@@ -5,9 +5,9 @@
 // 최선: NlogN
 // 평균: NlogN
 // 최악: N^2
+// 오름차순 / 내림차순과 같이 동일한 데이터 형식이 주어지는 경우 분할이 N번 발생
 
-// 고정 피벗을 기준으로 정복 - 1 (왼쪽)
-function leftPartition(array, p, right) {
+function partition(array, p, right) {
   const pivot = array[p];
   let low, high;
 
@@ -29,37 +29,15 @@ function leftPartition(array, p, right) {
   return high;
 }
 
-// 고정 피벗을 기준으로 정복 - 2 (중간)
-function middlePartition(array, left, right) {
-  const mid = Math.floor((left + right) / 2);
-  const pivot = array[mid];
-
-  let low = left;
-  let high = right;
-
-  while (low <= high) {
-    while (array[low] < pivot) low++;
-    while (array[high] > pivot) high--;
-
-    if (low <= high) {
-      [array[low], array[high]] = [array[high], array[low]];
-      low++;
-      high--;
-    }
-  }
-
-  return low;
-}
-
 function quickSort(array, left, right) {
   if (left >= right) return;
 
   // 피벗을 기준으로 값을 비교하고 위치를 변경한 후에
-  const pivot = middlePartition(array, left, right);
+  const pivot = partition(array, left, right);
 
   // 피벗을 기준으로 분할
   quickSort(array, left, pivot - 1);
-  quickSort(array, pivot, right);
+  quickSort(array, pivot + 1, right);
 }
 
 const array = [9, 1, 6, 2, 7, 8, 4, 3, 5];
