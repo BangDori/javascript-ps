@@ -21,81 +21,80 @@ readline
     process.exit();
   });
 
-const ROCK = "X";
-const ANIMAL = "S";
 const WATER = "*";
-const DESTINATION = "D";
+const ROCK = "X";
+const DEST = "D";
+const ANIMAL = "S";
 const EMPTY = ".";
-
-// 고슴도치가 이동 가능한 모든 경우의 수를 확인
 
 const dirs = [
   [-1, 0],
   [1, 0],
-  [0, 1],
   [0, -1],
+  [0, 1],
 ];
 
 function solution(ySize, xSize, matrix) {
-  const { animal, dest, waters } = getPoints(matrix);
+  const { animal, dest, waters } = getMatrixInfo(matrix);
 
-  const visited = Array.from({ length: ySize }, () =>
-    new Array(xSize).fill(false)
-  );
-
-  let time = 0;
+  matrix[animal[0]][animal[1]] = EMPTY;
 
   function spreadWater() {
     const spread = [];
+    const len = waters.length;
 
-    // 물 확장
-    for (const water of waters) {
+    for (let i = 0; i < len; i++) {
+      const [y, x] = waters.pop();
+
       for (const [dy, dx] of dirs) {
-        const ny = water.y + dy;
-        const nx = water.x + dx;
+        const ny = y + dy;
+        const nx = x + dx;
 
-        if (ny < 0 || ny >= ySize || nx < 0 || nx >= xSize) continue;
+        if (!isValidCoord(ny, nx, ySize, xSize)) continue;
         if (matrix[ny][nx] === EMPTY) {
           matrix[ny][nx] = WATER;
-          spread.push({ y: ny, x: nx });
+          spread.push([ny, nx]);
         }
       }
     }
 
     waters.push(...spread);
   }
-
   function bfs() {
     const queue = [];
-    visited[animal.y][animal.x] = true;
-    queue.push({ y: animal.y, x: animal.x, time });
+    const visited = Array.from({ length: ySize }, () =>
+      Array(xSize).fill(false)
+    );
+
+    queue.push([...animal, 0]);
+    visited[animal[0]][animal[1]] = true;
 
     while (queue.length) {
-      const cycle = queue.length;
+      const nextQueue = [];
+      const len = queue.length;
 
-      // 물 확장
       spreadWater();
 
-      // 고슴도치 이동
-      for (let i = 0; i < cycle; i++) {
-        const animal = queue.shift();
-
-        if (animal.y === dest.y && animal.x === dest.x) {
-          return animal.time;
-        }
+      for (let i = 0; i < len; i++) {
+        const [y, x, count] = queue.pop();
 
         for (const [dy, dx] of dirs) {
-          const ny = animal.y + dy;
-          const nx = animal.x + dx;
+          const ny = y + dy;
+          const nx = x + dx;
 
-          if (ny < 0 || ny >= ySize || nx < 0 || nx >= xSize) continue;
-          if (matrix[ny][nx] === ROCK || matrix[ny][nx] === WATER) continue;
+          if (!isValidCoord(ny, nx, ySize, xSize)) continue;
           if (visited[ny][nx]) continue;
-
-          queue.push({ y: ny, x: nx, time: animal.time + 1 });
-          visited[ny][nx] = true;
+          if (matrix[ny][nx] === EMPTY) {
+            nextQueue.push([ny, nx, count + 1]);
+            visited[ny][nx] = true;
+          }
+          if (matrix[ny][nx] === DEST) {
+            return count + 1;
+          }
         }
       }
+
+      queue.push(...nextQueue);
     }
   }
 
@@ -104,18 +103,32 @@ function solution(ySize, xSize, matrix) {
   return answer || "KAKTUS";
 }
 
-function getPoints(matrix) {
+function getMatrixInfo(matrix) {
   const animal = [];
-  const waters = [];
   const dest = [];
+  const waters = [];
 
   for (let y = 0; y < matrix.length; y++) {
     for (let x = 0; x < matrix[0].length; x++) {
-      if (matrix[y][x] === WATER) waters.push({ y, x });
-      if (matrix[y][x] === ANIMAL) animal.push({ y, x });
-      if (matrix[y][x] === DESTINATION) dest.push({ y, x });
+      if (matrix[y][x] === ANIMAL) {
+        animal.push([y, x]);
+        continue;
+      }
+
+      if (matrix[y][x] === DEST) {
+        dest.push([y, x]);
+        continue;
+      }
+
+      if (matrix[y][x] === WATER) {
+        waters.push([y, x]);
+      }
     }
   }
 
-  return { animal: animal.pop(), waters, dest: dest.pop() };
+  return { animal: animal.pop(), dest: dest.pop(), waters };
+}
+
+function isValidCoord(y, x, ySize, xSize) {
+  return y >= 0 && y < ySize && x >= 0 && x < xSize;
 }
