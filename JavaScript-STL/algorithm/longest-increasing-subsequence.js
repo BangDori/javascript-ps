@@ -2,7 +2,7 @@ function binarySearch(array, target) {
   let left = 0,
     right = array.length - 1;
 
-  while (left <= right) {
+  while (left < right) {
     const mid = Math.floor((left + right) / 2);
 
     if (array[mid] === target) {
@@ -10,13 +10,13 @@ function binarySearch(array, target) {
     }
 
     if (array[mid] > target) {
-      right = mid - 1;
+      right = mid;
     } else {
       left = mid + 1;
     }
   }
 
-  return left;
+  return right;
 }
 
 function lis(array) {
