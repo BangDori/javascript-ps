@@ -1,43 +1,25 @@
-const readline = require("readline").createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require("fs");
+const input = fs.readFileSync("/dev/stdin").toString().trim().split("\n");
+const rest = 1_000_000_000;
 
-let input = [];
+const n = +input[0];
 
-readline
-  .on("line", function (line) {
-    input.push(line);
-  })
-  .on("close", function () {
-    /**
-     * Solution
-     */
+const dp = Array.from({ length: n + 1 }, () => Array(10).fill(0));
 
-    const n = +input[0];
-    console.log(solution(n));
-
-    process.exit();
-  });
-
-const MOD = 1_000_000_000;
-
-function solution(n) {
-  const dp = Array.from({ length: n + 1 }, () => new Array(9).fill(0));
-
-  for (let i = 1; i < 10; i++) {
-    dp[1][i] = 1;
-  }
-
-  for (let digit = 2; digit <= n; digit++) {
-    for (let end = 0; end < 10; end++) {
-      if (end === 0) dp[digit][0] = dp[digit - 1][1];
-      else if (end === 9) dp[digit][9] = dp[digit - 1][8];
-      else dp[digit][end] = dp[digit - 1][end - 1] + dp[digit - 1][end + 1];
-
-      dp[digit][end] %= MOD;
-    }
-  }
-
-  return dp[n].reduce((acc, curr) => (acc + curr) % MOD, 0);
+for (let i = 1; i <= 9; i++) {
+  dp[1][i] = 1;
 }
+
+for (let i = 2; i <= n; i++) {
+  dp[i][0] = dp[i - 1][1] % rest;
+
+  for (let digit = 1; digit <= 8; digit++) {
+    dp[i][digit] = (dp[i - 1][digit - 1] + dp[i - 1][digit + 1]) % rest;
+  }
+
+  dp[i][9] = dp[i - 1][8] % rest;
+}
+
+const answer = dp[n].reduce((acc, curr) => (acc + curr) % rest, 0);
+
+console.log(answer);
